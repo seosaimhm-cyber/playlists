@@ -1,0 +1,31 @@
+name: Build Mac App
+on: [push]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install pyinstaller yt-dlp Pillow
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller --noconsole --onefile --windowed \
+          --add-data "staffordsongs.db:." \
+          --add-data "Rare Soul Playlists.png:." \
+          Torchlight_v43.py
+
+      - name: Upload Executable
+        uses: actions/upload-artifact@v3
+        with:
+          name: Torchlight-Mac-App
+          path: dist/Torchlight_v43.app
