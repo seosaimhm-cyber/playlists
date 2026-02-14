@@ -5,9 +5,9 @@ jobs:
   build:
     strategy:
       matrix:
-        # This tells GitHub to run two separate builds
         include:
-          - { arch: x86_64, runner: macos-13, name: Intel-Mac }
+          # Change macos-13 to macos-15-intel
+          - { arch: x86_64, runner: macos-15-intel, name: Intel-Mac }
           - { arch: arm64, runner: macos-latest, name: Apple-Silicon-Mac }
     runs-on: ${{ matrix.runner }}
     steps:
