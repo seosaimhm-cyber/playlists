@@ -6,9 +6,8 @@ jobs:
     strategy:
       matrix:
         include:
-          # Change macos-13 to macos-15-intel
-          - { arch: x86_64, runner: macos-15-intel, name: Intel-Mac }
-          - { arch: arm64, runner: macos-latest, name: Apple-Silicon-Mac }
+          - { arch: x86_64, runner: macos-15-intel, name: Intel-Mac, mode: "--onefile" }
+          - { arch: arm64, runner: macos-latest, name: Apple-Silicon-Mac, mode: "--onedir" }
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Check out code
@@ -25,7 +24,7 @@ jobs:
 
       - name: Build App
         run: |
-          pyinstaller --noconsole --onedir --windowed \
+          pyinstaller --noconsole ${{ matrix.mode }} --windowed \
           --add-data "staffordsongs.db:." \
           --add-data "Rare Soul Playlists.png:." \
           Torchlight_v43.py
