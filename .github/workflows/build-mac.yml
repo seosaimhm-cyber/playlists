@@ -35,6 +35,3 @@ jobs:
         with:
           name: Torchlight-${{ matrix.name }}
           path: dist/Torchlight_v43.app
-        with:
-          name: Torchlight-Mac-App
-          path: dist/Torchlight_v43.app
