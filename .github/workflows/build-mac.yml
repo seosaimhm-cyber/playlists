@@ -1,9 +1,15 @@
-name: Build Mac App
+name: Build Mac Apps (Intel & Apple Silicon)
 on: [push]
 
 jobs:
   build:
-    runs-on: macos-latest
+    strategy:
+      matrix:
+        # This tells GitHub to run two separate builds
+        include:
+          - { arch: x86_64, runner: macos-13, name: Intel-Mac }
+          - { arch: arm64, runner: macos-latest, name: Apple-Silicon-Mac }
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -13,26 +19,22 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Universal Dependencies
+      - name: Install dependencies
         run: |
-          # We tell pip to look specifically for universal2 wheels
-          pip install --upgrade pip
-          pip install --only-binary=:all: --platform macosx_12_0_universal2 --target . pyinstaller yt-dlp Pillow
-          # Move the installed packages into the python path
-          cp -r ./bin/* /usr/local/bin/ || true
-          export PYTHONPATH=$PYTHONPATH:.
+          pip install pyinstaller yt-dlp Pillow
 
-      - name: Build Universal Mac App
+      - name: Build App
         run: |
-          # Use the --clean flag to ensure we don't use old 'thin' cached files
-          pyinstaller --noconsole --onedir --windowed --clean \
-          --target-architecture universal2 \
+          pyinstaller --noconsole --onedir --windowed \
           --add-data "staffordsongs.db:." \
           --add-data "Rare Soul Playlists.png:." \
           Torchlight_v43.py
 
-      - name: Upload Executable
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
+        with:
+          name: Torchlight-${{ matrix.name }}
+          path: dist/Torchlight_v43.app
         with:
           name: Torchlight-Mac-App
           path: dist/Torchlight_v43.app
