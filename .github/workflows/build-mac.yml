@@ -12,14 +12,16 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
+          architecture: 'arm64' # We stay on the modern runner but tell it to build for both
 
       - name: Install dependencies
         run: |
           pip install pyinstaller yt-dlp Pillow
 
-      - name: Build with PyInstaller
+      - name: Build Universal Mac App
         run: |
           pyinstaller --noconsole --onedir --windowed \
+          --target-architecture universal2 \
           --add-data "staffordsongs.db:." \
           --add-data "Rare Soul Playlists.png:." \
           Torchlight_v43.py
