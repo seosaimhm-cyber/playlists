@@ -12,15 +12,20 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          architecture: 'arm64' # We stay on the modern runner but tell it to build for both
 
-      - name: Install dependencies
+      - name: Install Universal Dependencies
         run: |
-          pip install pyinstaller yt-dlp Pillow
+          # We tell pip to look specifically for universal2 wheels
+          pip install --upgrade pip
+          pip install --only-binary=:all: --platform macosx_12_0_universal2 --target . pyinstaller yt-dlp Pillow
+          # Move the installed packages into the python path
+          cp -r ./bin/* /usr/local/bin/ || true
+          export PYTHONPATH=$PYTHONPATH:.
 
       - name: Build Universal Mac App
         run: |
-          pyinstaller --noconsole --onedir --windowed \
+          # Use the --clean flag to ensure we don't use old 'thin' cached files
+          pyinstaller --noconsole --onedir --windowed --clean \
           --target-architecture universal2 \
           --add-data "staffordsongs.db:." \
           --add-data "Rare Soul Playlists.png:." \
